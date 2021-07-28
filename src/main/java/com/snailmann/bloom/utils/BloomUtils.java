@@ -1,6 +1,8 @@
 package com.snailmann.bloom.utils;
 
 /**
+ * {@link "https://hur.st/bloomfilter/"}
+ *
  * @author liwenjie
  */
 public class BloomUtils {

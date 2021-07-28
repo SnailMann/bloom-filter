@@ -30,7 +30,6 @@ public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> implements LRU {
 
     private LRUBloomFilter(String tag, LRUFilterConfiguration configuration) {
         super(tag, configuration);
-        // filters
         this.filters = new ArrayList<>(configuration.getMaxSize());
         FilterConfiguration templateConfiguration = configuration.getTemplateConfiguration();
         for (int i = 0; i < configuration.getSize(); i++) {

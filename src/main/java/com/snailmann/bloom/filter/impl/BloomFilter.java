@@ -43,7 +43,6 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
 
     private BloomFilter(String tag, FilterConfiguration configuration) {
         super(tag, configuration);
-        // adder
         bitCount = new LongAdder();
         currentSize = new LongAdder();
         // hashes
@@ -81,7 +80,7 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
                 this.bitCount.increment();
             }
         }
-        // update date
+        // modify date
         this.currentSize.increment();
         this.configuration.getMeta().setUpdateDate(new Date());
     }
