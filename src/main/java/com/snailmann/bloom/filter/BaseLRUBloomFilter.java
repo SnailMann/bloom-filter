@@ -1,5 +1,6 @@
 package com.snailmann.bloom.filter;
 
+import com.snailmann.bloom.filter.config.LRUFilterConfiguration;
 import com.snailmann.bloom.filter.type.LRU;
 
 /**

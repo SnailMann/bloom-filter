@@ -1,5 +1,7 @@
 package com.snailmann.bloom.filter;
 
+import com.snailmann.bloom.filter.config.FilterConfiguration;
+
 /**
  * @author liwenjie
  */
@@ -35,15 +37,15 @@ public abstract class BaseBloomFilter<T> implements BloomFilter<T> {
         return this.configuration;
     }
 
-    public long totalBits() {
+    public long bitsOfFilter() {
         return this.configuration.getM();
     }
 
-    public double unitOccupiedBits() {
+    public double bitsPerElement() {
         return this.configuration.getB();
     }
 
-    public int expectedSize() {
+    public int numOfExpectedElement() {
         return this.configuration.getN();
     }
 
@@ -51,7 +53,7 @@ public abstract class BaseBloomFilter<T> implements BloomFilter<T> {
         return configuration.getP();
     }
 
-    public int hashFunctionSize() {
+    public int numOfHashFunctions() {
         return configuration.getK();
     }
 

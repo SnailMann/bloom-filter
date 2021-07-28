@@ -9,6 +9,8 @@ public interface BloomFilter<T> {
 
     void put(T obj);
 
+    void put(byte[] bytes);
+
     void putAll(List<T> objs);
 
     boolean mightContains(T obj);

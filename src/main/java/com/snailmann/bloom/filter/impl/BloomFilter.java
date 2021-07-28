@@ -1,10 +1,8 @@
 package com.snailmann.bloom.filter.impl;
 
 import com.snailmann.bloom.filter.BaseBloomFilter;
-import com.snailmann.bloom.filter.FilterConfiguration;
-import com.snailmann.bloom.hash.Hash;
+import com.snailmann.bloom.filter.config.FilterConfiguration;
 import com.snailmann.bloom.hash.Murmur3Hash;
-import com.snailmann.bloom.utils.ByteUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
@@ -15,7 +13,7 @@ import java.util.concurrent.atomic.LongAdder;
  * @author liwenjie
  */
 @Slf4j
-public final class SimpleBloomFilter extends BaseBloomFilter<String> {
+public final class BloomFilter extends BaseBloomFilter<String> {
 
     /**
      * Data field of bloom filter
@@ -28,7 +26,7 @@ public final class SimpleBloomFilter extends BaseBloomFilter<String> {
     private LongAdder bitCount;
 
     /**
-     * Current number of items
+     * Current number of elements
      */
     private LongAdder currentSize;
 
@@ -37,11 +35,11 @@ public final class SimpleBloomFilter extends BaseBloomFilter<String> {
      */
     private final Murmur3Hash murmur3 = new Murmur3Hash();
 
-    private SimpleBloomFilter() {
+    private BloomFilter() {
         this(null, FilterConfiguration.defaultConfiguration());
     }
 
-    public SimpleBloomFilter(String tag, FilterConfiguration configuration) {
+    public BloomFilter(String tag, FilterConfiguration configuration) {
         super(tag, configuration);
         // adder
         bitCount = new LongAdder();
@@ -53,13 +51,18 @@ public final class SimpleBloomFilter extends BaseBloomFilter<String> {
     }
 
     /**
-     * Put a item to bloom filter
+     * Put a element to bloom filter
      *
-     * @param obj item
+     * @param obj element
      */
     @Override
     public void put(String obj) {
         byte[] bs = obj.getBytes();
+        put(bs);
+    }
+
+    @Override
+    public void put(byte[] bs) {
         int m = configuration.getM();
         for (var h : murmur3.hashes) {
             int index = murmur3.index(() -> h.hash(h.hashToLong(bs)), m);
@@ -77,9 +80,9 @@ public final class SimpleBloomFilter extends BaseBloomFilter<String> {
     }
 
     /**
-     * Put a batch of items to bloom filter
+     * Put a batch of elements to bloom filter
      *
-     * @param objs items
+     * @param objs elements
      */
     @Override
     public void putAll(List<String> objs) {
@@ -87,16 +90,16 @@ public final class SimpleBloomFilter extends BaseBloomFilter<String> {
             try {
                 put(o);
             } catch (Exception e) {
-                log.error("put item [{}] error", o);
+                log.error("put element [{}] error", o);
             }
         }
     }
 
     /**
-     * Item may have appeared in bloom filter. The probability of fpp will misjudge the non-existent item
+     * Element may have appeared in bloom filter. The probability of fpp will misjudge the non-existent element
      *
-     * @param obj item
-     * @return whether item exists
+     * @param obj element
+     * @return whether element exists
      */
     @Override
     public boolean mightContains(String obj) {
@@ -119,7 +122,7 @@ public final class SimpleBloomFilter extends BaseBloomFilter<String> {
                 "bytes_len=" + bytes.length + "," +
                 "tag=" + getTag() + "," +
                 "bit_count=" + getBitCount() + "，" +
-                "item_size=" + getCurrentSize() + "，" +
+                "element_size=" + getCurrentSize() + "，" +
                 "config=" + configuration +
                 '}';
     }
@@ -132,38 +135,19 @@ public final class SimpleBloomFilter extends BaseBloomFilter<String> {
         return bitCount.longValue();
     }
 
-    public static SimpleBloomFilter create() {
-        return new SimpleBloomFilter();
+    public static BloomFilter create() {
+        return new BloomFilter();
     }
 
-    public static SimpleBloomFilter create(String tag, FilterConfiguration configuration) {
-        return new SimpleBloomFilter(tag, configuration);
+    public static BloomFilter create(String tag, FilterConfiguration configuration) {
+        return new BloomFilter(tag, configuration);
     }
 
-    public static SimpleBloomFilter create(String tag, int n, double p) {
-        return new SimpleBloomFilter(tag, FilterConfiguration.config(n, p));
+    public static BloomFilter create(String tag, int n, double p) {
+        return new BloomFilter(tag, FilterConfiguration.config(n, p));
     }
 
-    public static SimpleBloomFilter create(String tag, int n, int k, double b) {
-        return new SimpleBloomFilter(tag, FilterConfiguration.config(n, k, b));
-    }
-
-    public static void main(String[] args) {
-
-        SimpleBloomFilter boomFilter = SimpleBloomFilter.create("test", 333, 0.0003d);
-        System.out.println(boomFilter.toString());
-        System.out.println(ByteUtils.bitCount(boomFilter.bytes));
-
-        for (int i = 0; i < 300; i++) {
-            boomFilter.put(i + "");
-        }
-
-        System.out.println(boomFilter.mightContains("123"));
-        System.out.println(boomFilter.mightContains("12"));
-        System.out.println(boomFilter.mightContains("333"));
-
-        System.out.println(boomFilter.toString());
-        System.out.println(ByteUtils.bitCount(boomFilter.bytes));
-
+    public static BloomFilter create(String tag, int n, int k, double b) {
+        return new BloomFilter(tag, FilterConfiguration.config(n, k, b));
     }
 }

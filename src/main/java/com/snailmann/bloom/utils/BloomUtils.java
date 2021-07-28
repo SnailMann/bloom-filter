@@ -44,7 +44,7 @@ public class BloomUtils {
      *
      * <p>See http://en.wikipedia.org/wiki/File:Bloom_filter_fp_probability.svg for the formula.
      *
-     * @param n expected items (must be positive)
+     * @param n expected elements (must be positive)
      * @param m total number of bits in Bloom filter (must be positive)
      */
     public static int optimalNumOfHashFunctions(int n, int m) {
@@ -67,11 +67,11 @@ public class BloomUtils {
     }
 
     /**
-     * Bits occupied per item
+     * Bits occupied per element
      *
-     * @param n expected items
+     * @param n expected elements
      * @param m total number of bits in Bloom filter
-     * @return b (space occupied by unit item)
+     * @return b (space occupied by unit element)
      */
     public static double bitsOfItem(int n, int m) {
         return (double) m / n;

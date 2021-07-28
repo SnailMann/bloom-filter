@@ -3,10 +3,10 @@
 ### Bloom Filter
 
 **Key Parameter**
-- n 是预期过滤器能支撑的 items 个数
+- n 是预期过滤器能支撑的 elements 个数
 - m 是位数组的大小，即多少 bit
     - `m = -nlogp/(log2)^2` 
-- b 是每个 item 所占用的空间
+- b 是每个 element 所占用的空间
     - `b = m/n`
 - p 是假阳性率 fpp（false positive probability），即不存在却误判为存在的概率
     - p =`(1-[1-1/m]^kn)^k` 约= `(1-e^(-kn/m))^k`  = `(1-e^(-k/(m/n))^k` = `(1-e^(-k/b))^k`

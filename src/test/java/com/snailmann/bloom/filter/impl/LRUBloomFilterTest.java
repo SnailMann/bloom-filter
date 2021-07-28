@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,19 +16,19 @@ import java.util.stream.Collectors;
  * @author liwenjie
  */
 @Slf4j
-class LRUSimpleBloomFilterTest {
+class LRUBloomFilterTest {
 
     @Test
     public void fpp_test() {
         var n = 30000;
         var p = 0.001;
         var msize = 10;
-        LRUSimpleBloomFilter filter = LRUSimpleBloomFilter.create("test", n, p, msize);
+        LRUBloomFilter filter = LRUBloomFilter.create("test", n, p, msize);
         var fpp = test(filter, n);
         Assert.isTrue(String.format("%.3f", p).equals(String.format("%.3f", fpp)), "fpp not match");
     }
 
-    private double test(LRUSimpleBloomFilter filter, int n) {
+    private double test(LRUBloomFilter filter, int n) {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(30);
         Map<String, Boolean> map = new LinkedHashMap<>();
         System.out.println(filter.configuration.templateConfiguration);

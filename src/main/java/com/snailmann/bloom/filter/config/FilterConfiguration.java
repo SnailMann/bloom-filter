@@ -1,7 +1,9 @@
-package com.snailmann.bloom.filter;
+package com.snailmann.bloom.filter.config;
 
 import lombok.Data;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import static com.snailmann.bloom.utils.BloomUtils.*;
@@ -15,7 +17,7 @@ import static com.snailmann.bloom.utils.BloomUtils.*;
 public class FilterConfiguration {
 
     /**
-     * Number of items expected to be supported by the filter
+     * Number of elements expected to be supported by the filter
      */
     private int n;
 
@@ -31,7 +33,7 @@ public class FilterConfiguration {
     private int k;
 
     /**
-     * Space occupied by unit item (unit: bit)
+     * Space occupied by unit element (unit: bit)
      */
     private double b;
 
@@ -39,6 +41,11 @@ public class FilterConfiguration {
      * Fpp (false positive probability)
      */
     private double p;
+
+    /**
+     * Encoding used for storing hash values as strings
+     */
+    static final Charset CHARSET = StandardCharsets.UTF_8;
 
     /**
      * Configuration meta
@@ -99,8 +106,6 @@ public class FilterConfiguration {
             meta.setUpdateDate(new Date());
             return meta;
         }
-
-
     }
 
 }

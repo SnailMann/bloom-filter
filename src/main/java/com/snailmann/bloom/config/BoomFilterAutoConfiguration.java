@@ -1,7 +1,7 @@
 package com.snailmann.bloom.config;
 
-import com.snailmann.bloom.filter.FilterConfiguration;
-import com.snailmann.bloom.filter.impl.SimpleBloomFilter;
+import com.snailmann.bloom.filter.config.FilterConfiguration;
+import com.snailmann.bloom.filter.impl.BloomFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +21,8 @@ public class BoomFilterAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(SimpleBloomFilter.class)
-    public SimpleBloomFilter simpleBoomFilter(FilterConfiguration configuration) {
-        return SimpleBloomFilter.create(null, configuration);
+    @ConditionalOnMissingBean(BloomFilter.class)
+    public BloomFilter simpleBoomFilter(FilterConfiguration configuration) {
+        return BloomFilter.create(null, configuration);
     }
 }

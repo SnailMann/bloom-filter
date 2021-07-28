@@ -1,6 +1,5 @@
 package com.snailmann.bloom.filter.impl;
 
-import com.snailmann.bloom.filter.impl.SimpleBloomFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.Assert;
@@ -15,13 +14,13 @@ import java.util.stream.Collectors;
  * @author liwenjie
  */
 @Slf4j
-public class SimpleBloomFilterTest {
+public class BloomFilterTest {
 
     @Test
     public void fpp_n_p_test() {
         var n = 30000;
         var p = 0.001;
-        SimpleBloomFilter filter = SimpleBloomFilter.create("test", n, p);
+        BloomFilter filter = BloomFilter.create("test", n, p);
         var fpp = test(filter, n);
         Assert.isTrue(String.format("%.3f", p).equals(String.format("%.3f", fpp)), "fpp not match");
     }
@@ -32,12 +31,12 @@ public class SimpleBloomFilterTest {
         var k = 10;
         var b = 14.377333333333333;
         var p = 0.001;
-        SimpleBloomFilter filter = SimpleBloomFilter.create("test", n, k, b);
+        BloomFilter filter = BloomFilter.create("test", n, k, b);
         var fpp = test(filter, n);
         Assert.isTrue(String.format("%.3f", p).equals(String.format("%.3f", fpp)), "fpp not match");
     }
 
-    public double test(SimpleBloomFilter filter, int n) {
+    public double test(BloomFilter filter, int n) {
         Map<String, Boolean> map = new LinkedHashMap<>();
         System.out.println(filter);
 

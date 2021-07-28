@@ -1,4 +1,4 @@
-package com.snailmann.bloom.filter;
+package com.snailmann.bloom.filter.config;
 
 import lombok.Data;
 import org.springframework.util.Assert;
