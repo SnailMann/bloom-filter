@@ -39,8 +39,8 @@ public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> implements LRU {
     }
 
     @Override
-    public synchronized void put(E obj) {
-        byte[] bs = obj.toString().getBytes(charset());
+    public synchronized void put(E element) {
+        byte[] bs = element.toString().getBytes(charset());
         put(bs);
     }
 
@@ -74,17 +74,29 @@ public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> implements LRU {
     }
 
     @Override
-    public void putAll(List<E> objs) {
-
+    public void putAll(List<E> elements) {
+        for (E o : elements) {
+            try {
+                put(o);
+            } catch (Exception e) {
+                log.error("put a element [{}] error", o, e);
+            }
+        }
     }
 
     @Override
-    public synchronized boolean mightContains(E obj) {
+    public synchronized boolean mightContains(E element) {
+        byte[] bs = element.toString().getBytes(charset());
+        return mightContains(bs);
+    }
+
+    @Override
+    public boolean mightContains(byte[] bs) {
         if (CollectionUtils.isEmpty(filters)) {
             return false;
         }
         for (var filter : filters) {
-            boolean flag = filter.mightContains(obj);
+            boolean flag = filter.mightContains(bs);
             if (flag) {
                 return true;
             }

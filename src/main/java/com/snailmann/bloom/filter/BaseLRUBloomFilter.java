@@ -2,14 +2,20 @@ package com.snailmann.bloom.filter;
 
 import com.snailmann.bloom.filter.config.LRUFilterConfiguration;
 import com.snailmann.bloom.filter.type.LRU;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author liwenjie
  */
 public abstract class BaseLRUBloomFilter<T> implements BloomFilter<T>, LRU {
 
+    @Getter
+    @Setter
     private double threshold = 0.90d;
 
+    @Getter
+    @Setter
     private String tag = "default";
 
     public LRUFilterConfiguration configuration;
@@ -25,19 +31,4 @@ public abstract class BaseLRUBloomFilter<T> implements BloomFilter<T>, LRU {
         this.configuration = configuration;
     }
 
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
-    public double getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(double threshold) {
-        this.threshold = threshold;
-    }
 }

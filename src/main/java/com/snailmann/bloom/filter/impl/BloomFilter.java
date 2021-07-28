@@ -55,11 +55,11 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
     /**
      * Put a element to bloom filter
      *
-     * @param obj element
+     * @param element element
      */
     @Override
-    public void put(E obj) {
-        byte[] bs = obj.toString().getBytes(charset());
+    public void put(E element) {
+        byte[] bs = element.toString().getBytes(charset());
         put(bs);
     }
 
@@ -89,15 +89,15 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
     /**
      * Put a batch of elements to bloom filter
      *
-     * @param objs elements
+     * @param elements elements
      */
     @Override
-    public void putAll(List<E> objs) {
-        for (E o : objs) {
+    public void putAll(List<E> elements) {
+        for (E o : elements) {
             try {
                 put(o);
             } catch (Exception e) {
-                log.error("put element [{}] error", o);
+                log.error("put element [{}] error", o, e);
             }
         }
     }
@@ -105,12 +105,17 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
     /**
      * Element may have appeared in bloom filter. The probability of fpp will misjudge the non-existent element
      *
-     * @param obj element
+     * @param element element
      * @return whether element exists
      */
     @Override
-    public boolean mightContains(E obj) {
-        byte[] bs = obj.toString().getBytes(charset());
+    public boolean mightContains(E element) {
+        byte[] bs = element.toString().getBytes(charset());
+        return mightContains(bs);
+    }
+
+    @Override
+    public boolean mightContains(byte[] bs) {
         int m = configuration.getM();
         for (var h : murmur3.hashes) {
             int index = murmur3.index(() -> h.hash(h.hashToLong(bs)), m);

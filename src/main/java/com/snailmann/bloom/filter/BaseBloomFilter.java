@@ -1,6 +1,8 @@
 package com.snailmann.bloom.filter;
 
 import com.snailmann.bloom.filter.config.FilterConfiguration;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author liwenjie
@@ -10,11 +12,13 @@ public abstract class BaseBloomFilter<T> implements BloomFilter<T> {
     /**
      * A byte has 8 bits
      */
-    public static final int B = 8;
+    protected static final int B = 8;
 
     /**
      * Tag of Bloom Filter
      */
+    @Getter
+    @Setter
     private String tag = "default";
 
     /**
@@ -55,13 +59,5 @@ public abstract class BaseBloomFilter<T> implements BloomFilter<T> {
 
     public int numOfHashFunctions() {
         return configuration.getK();
-    }
-
-    public String getTag() {
-        return this.tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 }
