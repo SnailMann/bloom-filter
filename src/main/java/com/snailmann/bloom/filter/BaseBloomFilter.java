@@ -24,7 +24,7 @@ public abstract class BaseBloomFilter<T> implements BloomFilter<T> {
     /**
      * Bloom Filter configuration
      */
-    protected FilterConfiguration configuration;
+    private FilterConfiguration configuration;
 
     public BaseBloomFilter() {
         this(null, FilterConfiguration.defaultConfiguration());

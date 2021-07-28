@@ -69,7 +69,7 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
      */
     @Override
     public void put(byte[] bs) {
-        int m = configuration.getM();
+        int m = configuration().getM();
         for (var h : murmur3.hashes) {
             int index = murmur3.index(() -> h.hash(h.hashToLong(bs)), m);
             byte a = this.bytes[index / B];
@@ -82,7 +82,7 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
         }
         // modify date
         this.currentSize.increment();
-        this.configuration.getMeta().setUpdateDate(new Date());
+        this.configuration().getMeta().setUpdateDate(new Date());
     }
 
     /**
@@ -115,7 +115,7 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
 
     @Override
     public boolean mightContains(byte[] bs) {
-        int m = configuration.getM();
+        int m = configuration().getM();
         for (var h : murmur3.hashes) {
             int index = murmur3.index(() -> h.hash(h.hashToLong(bs)), m);
             byte a = bytes[index / B];
@@ -134,7 +134,7 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
                 "tag=" + getTag() + "," +
                 "bit_count=" + getBitCount() + "，" +
                 "element_size=" + getCurrentSize() + "，" +
-                "config=" + configuration +
+                "config=" + configuration() +
                 '}';
     }
 
