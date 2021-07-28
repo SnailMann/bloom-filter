@@ -73,7 +73,7 @@ public class FilterConfiguration {
         int m = optimalNumOfBits(n, p);
         configuration.setM(m);
         configuration.setK(optimalNumOfHashFunctions(n, m));
-        configuration.setB(bitsOfItem(n, m));
+        configuration.setB(bitsOfElement(n, m));
         return configuration;
     }
 

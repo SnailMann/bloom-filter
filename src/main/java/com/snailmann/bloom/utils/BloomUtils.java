@@ -71,9 +71,9 @@ public class BloomUtils {
      *
      * @param n expected elements
      * @param m total number of bits in Bloom filter
-     * @return b (space occupied by unit element)
+     * @return b (bits occupied by per element)
      */
-    public static double bitsOfItem(int n, int m) {
+    public static double bitsOfElement(int n, int m) {
         return (double) m / n;
     }
 }

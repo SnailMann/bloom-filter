@@ -107,7 +107,7 @@ public class LRUFilterConfiguration {
             int k = optimalNumOfHashFunctions(sn, m);
             System.out.println(
                     BigDecimal.valueOf(sfpp) + ":k=" + k + ":n=" + sn + ":m=" + m
-                            + ":count=" + size + ":b=" + bitsOfItem(n, m));
+                            + ":count=" + size + ":b=" + bitsOfElement(n, m));
         }
     }
 
