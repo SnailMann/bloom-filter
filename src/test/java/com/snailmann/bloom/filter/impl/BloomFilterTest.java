@@ -20,7 +20,7 @@ public class BloomFilterTest {
     public void fpp_n_p_test() {
         var n = 30000;
         var p = 0.001;
-        BloomFilter filter = BloomFilter.create("test", n, p);
+        BloomFilter<Integer> filter = BloomFilter.create("test", n, p);
         var fpp = test(filter, n);
         Assert.isTrue(String.format("%.3f", p).equals(String.format("%.3f", fpp)), "fpp not match");
     }
@@ -31,20 +31,20 @@ public class BloomFilterTest {
         var k = 10;
         var b = 14.377333333333333;
         var p = 0.001;
-        BloomFilter filter = BloomFilter.create("test", n, k, b);
+        BloomFilter<Integer> filter = BloomFilter.create("test", n, k, b);
         var fpp = test(filter, n);
         Assert.isTrue(String.format("%.3f", p).equals(String.format("%.3f", fpp)), "fpp not match");
     }
 
-    public double test(BloomFilter filter, int n) {
+    public double test(BloomFilter<Integer> filter, int n) {
         Map<String, Boolean> map = new LinkedHashMap<>();
         System.out.println(filter);
 
         for (int i = 0; i < n; i++) {
-            filter.put(i + "");
+            filter.put(i);
         }
         for (int i = n; i < n * 2; i++) {
-            boolean res = filter.mightContains(i + "");
+            boolean res = filter.mightContains(i);
             map.put(i + "", res);
         }
 

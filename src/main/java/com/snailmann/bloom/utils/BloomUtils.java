@@ -29,8 +29,8 @@ public class BloomUtils {
     // Cheat sheet:
     //
     // m: total bits
-    // n: expected insertions
-    // b: m/n, bits per insertion
+    // n: expected elements
+    // b: m/n, bits per elements
     // p: expected false positive probability
     //
     // 1) Optimal k = b * ln2

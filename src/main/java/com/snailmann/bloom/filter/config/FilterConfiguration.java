@@ -17,6 +17,11 @@ import static com.snailmann.bloom.utils.BloomUtils.*;
 public class FilterConfiguration {
 
     /**
+     * Encoding used for storing hash values as strings
+     */
+    static final Charset CHARSET = StandardCharsets.UTF_8;
+
+    /**
      * Number of elements expected to be supported by the filter
      */
     private int n;
@@ -41,11 +46,6 @@ public class FilterConfiguration {
      * Fpp (false positive probability)
      */
     private double p;
-
-    /**
-     * Encoding used for storing hash values as strings
-     */
-    static final Charset CHARSET = StandardCharsets.UTF_8;
 
     /**
      * Configuration meta
@@ -81,7 +81,7 @@ public class FilterConfiguration {
         return config(10000, 0.00046);
     }
 
-    public static FilterConfiguration copy(FilterConfiguration src) {
+    public static FilterConfiguration copyOf(FilterConfiguration src) {
         FilterConfiguration target = new FilterConfiguration();
         target.setN(src.getN());
         target.setM(src.getM());
@@ -89,6 +89,10 @@ public class FilterConfiguration {
         target.setK(src.getK());
         target.setB(src.getB());
         return target;
+    }
+
+    public static Charset charset() {
+        return CHARSET;
     }
 
     public Meta getMeta() {
