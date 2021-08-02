@@ -70,8 +70,8 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
     @Override
     public void put(byte[] bs) {
         int m = configuration().getM();
-        for (var h : murmur3.hashes) {
-            int index = murmur3.index(() -> h.hash(h.hashToLong(bs)), m);
+        for (var hash : murmur3.hashes) {
+            int index = murmur3.index(() -> hash.hash(hash.hashToLong(bs)), m);
             byte bits = this.bytes[index / B];
             byte t = (byte) (1 << (index % B));
             this.bytes[index / B] = (byte) (bits | t);
@@ -116,11 +116,11 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
     @Override
     public boolean mightContains(byte[] bs) {
         int m = configuration().getM();
-        for (var h : murmur3.hashes) {
-            int index = murmur3.index(() -> h.hash(h.hashToLong(bs)), m);
-            byte a = bytes[index / B];
-            byte b = (byte) (1 << (index % B));
-            if ((a & b) == 0) {
+        for (var hash : murmur3.hashes) {
+            int index = murmur3.index(() -> hash.hash(hash.hashToLong(bs)), m);
+            byte bits = bytes[index / B];
+            byte t = (byte) (1 << (index % B));
+            if ((bits & t) == 0) {
                 return false;
             }
         }
