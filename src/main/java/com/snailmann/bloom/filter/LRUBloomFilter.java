@@ -58,8 +58,7 @@ public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> {
         int size = filters.size();
         if (configuration.getMaxSize() > 1 && size <= configuration.getMaxSize()) {
             var filter = filters.get(size - 1);
-            int elementSize = filter.getCurrentSize();
-            if ((double) elementSize >= filter.configuration().getN()) {
+            if (filter.getCurrentSize() >= filter.configuration().getN()) {
                 if (size >= configuration.getMaxSize()) {
                     filters.remove(0);
                 }
