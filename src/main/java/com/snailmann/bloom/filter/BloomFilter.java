@@ -73,7 +73,7 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
         for (var hash : murmur3.hashes) {
             int index = murmur3.index(() -> hash.hash(hash.hashToLong(bs)), m);
             byte bits = this.bytes[index / B];
-            byte t = (byte) (1 << (index % B));
+            byte t = (byte) (1 << (B_MASK - (index % B)));
             this.bytes[index / B] = (byte) (bits | t);
             // bit count
             if ((bits & t) == 0) {
@@ -119,7 +119,7 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
         for (var hash : murmur3.hashes) {
             int index = murmur3.index(() -> hash.hash(hash.hashToLong(bs)), m);
             byte bits = bytes[index / B];
-            byte t = (byte) (1 << (index % B));
+            byte t = (byte) (1 << (B_MASK - (index % B)));
             if ((bits & t) == 0) {
                 return false;
             }

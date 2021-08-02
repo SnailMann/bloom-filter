@@ -15,6 +15,11 @@ public abstract class BaseBloomFilter<T> implements BloomFilter<T> {
     protected static final int B = 8;
 
     /**
+     * B mask
+     */
+    protected static final int B_MASK = B - 1;
+
+    /**
      * Tag of Bloom Filter
      */
     @Getter

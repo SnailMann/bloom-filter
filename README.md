@@ -42,7 +42,23 @@
 - 串联过滤器的好处就是可以 LRU 过滤器，坏处就是会提高误判率，要想达到与单个 filter 相同的 fpp, 那么就要牺牲 m/n 占比
     - 如单 filter （n=10000,k=10,m=143775,b=14.3775）,在 filter 的数量调整为 3 个时，b 就从 14.2775 -> 16.6633        
 
-### Requirement
+
+
+### Code
+
+- 将位数组的第 index 位置置为 1 （index 从 1 开始）
+
+```java
+    byte bits = this.bytes[index / B];
+    byte t = (byte) (1 << (B_MASK - (index % B)));
+    this.bytes[index / B] = (byte) (bits | t);
+```
+- `index / B` 向下取整，可以得到 index 所在的 byte
+- 然后通过 `index % B` 取余，可以知道 index 在该 byte 的第几 bit （范围 [0,7]） 
+- 因为要置指定位为 1，所以我们需要将 `00000001` 左移，然后做或运算
+- 那么要左移几位？假设 index % B = 5, 我们要将 `00000001` 变成 `00000100`， 从左往后，从 0 开始数的第五位
+    - 那么我们就需要将 1 << ((B-1) - (index%B))， 即左移 2 位得到 `00000100`，再做或运算即可
+
 
 
 
