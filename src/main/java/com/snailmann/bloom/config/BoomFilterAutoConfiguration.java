@@ -1,7 +1,7 @@
 package com.snailmann.bloom.config;
 
 import com.snailmann.bloom.filter.config.FilterConfiguration;
-import com.snailmann.bloom.filter.impl.BloomFilter;
+import com.snailmann.bloom.filter.BloomFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.snailmann.bloom.filter;
+package com.snailmann.bloom.filter.basic;
 
 import com.snailmann.bloom.filter.config.FilterConfiguration;
 import lombok.Getter;
@@ -19,7 +19,7 @@ public abstract class BaseBloomFilter<T> implements BloomFilter<T> {
      */
     @Getter
     @Setter
-    private String tag = "default";
+    private String name = "default";
 
     /**
      * Bloom Filter configuration
@@ -30,9 +30,9 @@ public abstract class BaseBloomFilter<T> implements BloomFilter<T> {
         this(null, FilterConfiguration.defaultConfiguration());
     }
 
-    public BaseBloomFilter(String tag, FilterConfiguration configuration) {
-        if (tag != null) {
-            this.tag = tag;
+    public BaseBloomFilter(String name, FilterConfiguration configuration) {
+        if (name != null) {
+            this.name = name;
         }
         this.configuration = configuration;
     }

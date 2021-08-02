@@ -1,9 +1,8 @@
-package com.snailmann.bloom.filter.impl;
+package com.snailmann.bloom.filter;
 
-import com.snailmann.bloom.filter.BaseLRUBloomFilter;
+import com.snailmann.bloom.filter.basic.BaseLRUBloomFilter;
 import com.snailmann.bloom.filter.config.FilterConfiguration;
 import com.snailmann.bloom.filter.config.LRUFilterConfiguration;
-import com.snailmann.bloom.filter.type.LRU;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
@@ -18,7 +17,7 @@ import static com.snailmann.bloom.filter.config.FilterConfiguration.charset;
  * @author liwenjie
  */
 @Slf4j
-public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> implements LRU {
+public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> {
 
     private AtomicInteger version = new AtomicInteger(0);
 
@@ -46,7 +45,8 @@ public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> implements LRU {
     @Override
     public void put(byte[] bs) {
         // remove expire filter
-        expired();
+        removeExpiredFilter();
+
         // initialize filter
         if (CollectionUtils.isEmpty(filters)) {
             log.info("new filter");
@@ -103,21 +103,18 @@ public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> implements LRU {
         return false;
     }
 
-    private BloomFilter<E> newFilter(FilterConfiguration configuration) {
-        return BloomFilter.create(String.valueOf(version.getAndIncrement()), configuration);
-    }
-
-    private void expired() {
+    private void removeExpiredFilter() {
         long timestamp = System.currentTimeMillis();
         filters.removeIf(filter -> {
             var u = filter.configuration().getMeta().getUpdateDate().getTime();
             var ttl = configuration.getTtl().toMillis();
             // Note: Do not compare "ttl + u < timestamp", which will cause long overflow
-            if (timestamp - u > ttl) {
-                return true;
-            }
-            return false;
+            return timestamp - u > ttl;
         });
+    }
+
+    private BloomFilter<E> newFilter(FilterConfiguration configuration) {
+        return BloomFilter.create(String.valueOf(version.getAndIncrement()), configuration);
     }
 
     public static <R> LRUBloomFilter<R> create() {

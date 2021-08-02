@@ -1,5 +1,6 @@
 package com.snailmann.bloom.filter.impl;
 
+import com.snailmann.bloom.filter.LRUBloomFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.Assert;

@@ -12,7 +12,7 @@ public class Murmur3Hash extends Hash {
 
     private final int seed = 2;
 
-    public List<MurmurHash> hashes = List.of(new MurmurHash(seed >> 1), new MurmurHash(seed >> 2));
+    public List<MurmurHash> hashes = List.of(new MurmurHash(seed << 1), new MurmurHash(seed << 2));
 
     @Override
     public void hashes(int k) {
