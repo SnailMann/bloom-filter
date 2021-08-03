@@ -1,6 +1,6 @@
 package com.snailmann.bloom.filter.basic;
 
-import com.snailmann.bloom.filter.config.LRUFilterConfiguration;
+import com.snailmann.bloom.filter.config.LRUFilterConfig;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,13 +13,13 @@ public abstract class BaseLRUBloomFilter<T> implements BloomFilter<T> {
     @Setter
     private String name = "default";
 
-    public LRUFilterConfiguration configuration;
+    public LRUFilterConfig configuration;
 
     public BaseLRUBloomFilter() {
-        this(null, LRUFilterConfiguration.defaultConfiguration());
+        this(null, LRUFilterConfig.defaultConfiguration());
     }
 
-    public BaseLRUBloomFilter(String name, LRUFilterConfiguration configuration) {
+    public BaseLRUBloomFilter(String name, LRUFilterConfig configuration) {
         if (null != name) {
             this.name = name;
         }

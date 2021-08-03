@@ -1,6 +1,6 @@
 package com.snailmann.bloom.filter.impl;
 
-import com.snailmann.bloom.filter.LRUBloomFilter;
+import com.snailmann.bloom.filter.LRUFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.Assert;
@@ -24,12 +24,12 @@ class LRUBloomFilterTest {
         var n = 30000;
         var p = 0.001;
         var msize = 10;
-        LRUBloomFilter<Integer> filter = LRUBloomFilter.create("test", n, p, msize);
+        LRUFilter<Integer> filter = LRUFilter.create("test", n, p, msize);
         var fpp = test(filter, n);
         Assert.isTrue(String.format("%.3f", p).equals(String.format("%.3f", fpp)), "fpp not match");
     }
 
-    private double test(LRUBloomFilter<Integer> filter, int n) {
+    private double test(LRUFilter<Integer> filter, int n) {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(30);
         Map<String, Boolean> map = new LinkedHashMap<>();
         System.out.println(filter.configuration.templateConfiguration);

@@ -1,7 +1,7 @@
 package com.snailmann.bloom.filter;
 
-import com.snailmann.bloom.filter.basic.BaseBloomFilter;
-import com.snailmann.bloom.filter.config.FilterConfiguration;
+import com.snailmann.bloom.filter.basic.BaseFilter;
+import com.snailmann.bloom.filter.config.FilterConfig;
 import com.snailmann.bloom.hash.Murmur3Hash;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,13 +9,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.snailmann.bloom.filter.config.FilterConfiguration.charset;
+import static com.snailmann.bloom.filter.config.FilterConfig.charset;
 
 /**
  * @author liwenjie
  */
 @Slf4j
-public final class BloomFilter<E> extends BaseBloomFilter<E> {
+public final class Filter<E> extends BaseFilter<E> {
 
     /**
      * Data field of bloom filter
@@ -37,11 +37,11 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
      */
     private final Murmur3Hash murmur3 = new Murmur3Hash();
 
-    private BloomFilter() {
-        this(null, FilterConfiguration.defaultConfiguration());
+    private Filter() {
+        this(null, FilterConfig.defaultConfig());
     }
 
-    private BloomFilter(String tag, FilterConfiguration configuration) {
+    private Filter(String tag, FilterConfig configuration) {
         super(tag, configuration);
         bitCount = new LongAdder();
         currentSize = new LongAdder();
@@ -69,7 +69,7 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
      */
     @Override
     public void put(byte[] bs) {
-        int m = configuration().getM();
+        int m = config().getM();
         for (var hash : murmur3.hashes) {
             int index = murmur3.index(() -> hash.hash(hash.hashToLong(bs)), m);
             byte bits = this.bytes[index / B];
@@ -82,7 +82,7 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
         }
         // modify date
         this.currentSize.increment();
-        this.configuration().getMeta().setUpdateDate(new Date());
+        this.config().getMeta().setUpdateDate(new Date());
     }
 
     /**
@@ -115,7 +115,7 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
 
     @Override
     public boolean mightContains(byte[] bs) {
-        int m = configuration().getM();
+        int m = config().getM();
         for (var hash : murmur3.hashes) {
             int index = murmur3.index(() -> hash.hash(hash.hashToLong(bs)), m);
             byte bits = bytes[index / B];
@@ -135,19 +135,24 @@ public final class BloomFilter<E> extends BaseBloomFilter<E> {
         return bitCount.longValue();
     }
 
-    public static <R> BloomFilter<R> create() {
-        return new BloomFilter<>();
+    public static <R> Filter<R> create() {
+        return new Filter<>();
     }
 
-    public static <R> BloomFilter<R> create(String tag, FilterConfiguration configuration) {
-        return new BloomFilter<>(tag, configuration);
+    public static <R> Filter<R> create(String tag, FilterConfig configuration) {
+        return new Filter<>(tag, configuration);
     }
 
-    public static <R> BloomFilter<R> create(String tag, int n, double p) {
-        return new BloomFilter<>(tag, FilterConfiguration.config(n, p));
+    public static <R> Filter<R> create(String tag, int n, double p) {
+        return new Filter<>(tag, FilterConfig.config(n, p));
     }
 
-    public static <R> BloomFilter<R> create(String tag, int n, int k, double b) {
-        return new BloomFilter<>(tag, FilterConfiguration.config(n, k, b));
+    public static <R> Filter<R> create(String tag, int n, int k, double b) {
+        return new Filter<>(tag, FilterConfig.config(n, k, b));
+    }
+
+    public static void main(String[] args) {
+        Long v = 15L;
+        System.out.println(Long.bitCount(v));
     }
 }

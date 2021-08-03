@@ -1,6 +1,6 @@
 package com.snailmann.bloom.filter.basic;
 
-import com.snailmann.bloom.filter.config.FilterConfiguration;
+import com.snailmann.bloom.filter.config.FilterConfig;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,40 +29,40 @@ public abstract class BaseBloomFilter<T> implements BloomFilter<T> {
     /**
      * Bloom Filter configuration
      */
-    private FilterConfiguration configuration;
+    private FilterConfig config;
 
     public BaseBloomFilter() {
-        this(null, FilterConfiguration.defaultConfiguration());
+        this(null, FilterConfig.defaultConfig());
     }
 
-    public BaseBloomFilter(String name, FilterConfiguration configuration) {
+    public BaseBloomFilter(String name, FilterConfig config) {
         if (name != null) {
             this.name = name;
         }
-        this.configuration = configuration;
+        this.config = config;
     }
 
-    public FilterConfiguration configuration() {
-        return this.configuration;
+    public FilterConfig config() {
+        return this.config;
     }
 
     public long bitsOfFilter() {
-        return this.configuration.getM();
+        return this.config.getM();
     }
 
     public double bitsPerElement() {
-        return this.configuration.getB();
+        return this.config.getB();
     }
 
     public int numOfExpectedElement() {
-        return this.configuration.getN();
+        return this.config.getN();
     }
 
     public double fpp() {
-        return configuration.getP();
+        return config.getP();
     }
 
     public int numOfHashFunctions() {
-        return configuration.getK();
+        return config.getK();
     }
 }

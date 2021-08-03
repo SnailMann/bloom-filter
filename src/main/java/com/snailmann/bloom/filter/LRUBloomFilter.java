@@ -1,8 +1,8 @@
 package com.snailmann.bloom.filter;
 
-import com.snailmann.bloom.filter.basic.BaseLRUBloomFilter;
-import com.snailmann.bloom.filter.config.FilterConfiguration;
-import com.snailmann.bloom.filter.config.LRUFilterConfiguration;
+import com.snailmann.bloom.filter.basic.BaseLRUFilter;
+import com.snailmann.bloom.filter.config.FilterConfig;
+import com.snailmann.bloom.filter.config.LRUFilterConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
@@ -11,28 +11,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.snailmann.bloom.filter.config.FilterConfiguration.charset;
+import static com.snailmann.bloom.filter.config.FilterConfig.charset;
 
 /**
  * @author liwenjie
  */
 @Slf4j
-public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> {
+public class LRUFilter<E> extends BaseLRUFilter<E> {
 
     private AtomicInteger version = new AtomicInteger(0);
 
-    private List<BloomFilter<E>> filters;
+    private List<BloomFilter<E>> bloomFilters;
 
-    private LRUBloomFilter() {
-        this(null, LRUFilterConfiguration.defaultConfiguration());
+    private LRUFilter() {
+        this(null, LRUFilterConfig.defaultConfiguration());
     }
 
-    private LRUBloomFilter(String tag, LRUFilterConfiguration configuration) {
+    private LRUFilter(String tag, LRUFilterConfig configuration) {
         super(tag, configuration);
-        this.filters = new ArrayList<>(configuration.getMaxSize());
-        FilterConfiguration templateConfiguration = configuration.getTemplateConfiguration();
+        this.bloomFilters = new ArrayList<>(configuration.getMaxSize());
+        FilterConfig templateConfiguration = configuration.getTemplateConfiguration();
         for (int i = 0; i < configuration.getSize(); i++) {
-            this.filters.add(BloomFilter.create(String.valueOf(version.getAndIncrement()), templateConfiguration));
+            this.bloomFilters.add(BloomFilter.create(String.valueOf(version.getAndIncrement()), templateConfiguration));
         }
     }
 
@@ -43,36 +43,36 @@ public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> {
     }
 
     @Override
-    public void put(byte[] bs) {
+    public synchronized void put(byte[] bs) {
         // remove expire filter
         removeExpiredFilter();
 
         // initialize filter
-        if (CollectionUtils.isEmpty(filters)) {
+        if (CollectionUtils.isEmpty(bloomFilters)) {
             log.info("new filter");
-            FilterConfiguration c = FilterConfiguration.copyOf(this.configuration.templateConfiguration);
+            FilterConfig c = FilterConfig.copyOf(this.configuration.templateConfiguration);
             var newFilter = newFilter(c);
-            filters.add(newFilter);
+            bloomFilters.add(newFilter);
         }
         // filter
-        int size = filters.size();
+        int size = bloomFilters.size();
         if (configuration.getMaxSize() > 1 && size <= configuration.getMaxSize()) {
-            var filter = filters.get(size - 1);
-            if (filter.getCurrentSize() >= filter.configuration().getN()) {
+            var filter = bloomFilters.get(size - 1);
+            if (filter.getCurrentSize() >= filter.config().getN()) {
                 if (size >= configuration.getMaxSize()) {
-                    filters.remove(0);
+                    bloomFilters.remove(0);
                 }
-                FilterConfiguration c = FilterConfiguration.copyOf(filter.configuration());
+                FilterConfig c = FilterConfig.copyOf(filter.config());
                 var newFilter = newFilter(c);
-                filters.add(newFilter);
+                bloomFilters.add(newFilter);
             }
         }
-        var filter = filters.get(size - 1);
+        var filter = bloomFilters.get(size - 1);
         filter.put(bs);
     }
 
     @Override
-    public void putAll(List<E> elements) {
+    public synchronized void putAll(List<E> elements) {
         for (E o : elements) {
             try {
                 put(o);
@@ -89,11 +89,11 @@ public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> {
     }
 
     @Override
-    public boolean mightContains(byte[] bs) {
-        if (CollectionUtils.isEmpty(filters)) {
+    public synchronized boolean mightContains(byte[] bs) {
+        if (CollectionUtils.isEmpty(bloomFilters)) {
             return false;
         }
-        for (var filter : filters) {
+        for (var filter : bloomFilters) {
             boolean flag = filter.mightContains(bs);
             if (flag) {
                 return true;
@@ -104,36 +104,36 @@ public class LRUBloomFilter<E> extends BaseLRUBloomFilter<E> {
 
     private void removeExpiredFilter() {
         long timestamp = System.currentTimeMillis();
-        filters.removeIf(filter -> {
-            var u = filter.configuration().getMeta().getUpdateDate().getTime();
+        bloomFilters.removeIf(filter -> {
+            var u = filter.config().getMeta().getUpdateDate().getTime();
             var ttl = configuration.getTtl().toMillis();
             // Note: Do not compare "ttl + u < timestamp", which will cause long overflow
             return timestamp - u > ttl;
         });
     }
 
-    private BloomFilter<E> newFilter(FilterConfiguration configuration) {
+    private BloomFilter<E> newFilter(FilterConfig configuration) {
         return BloomFilter.create(String.valueOf(version.getAndIncrement()), configuration);
     }
 
-    public static <R> LRUBloomFilter<R> create() {
-        return new LRUBloomFilter<>();
+    public static <R> LRUFilter<R> create() {
+        return new LRUFilter<>();
     }
 
-    public static <R> LRUBloomFilter<R> create(LRUFilterConfiguration configuration) {
-        return new LRUBloomFilter<>(null, configuration);
+    public static <R> LRUFilter<R> create(LRUFilterConfig configuration) {
+        return new LRUFilter<>(null, configuration);
     }
 
-    public static <R> LRUBloomFilter<R> create(String tag, LRUFilterConfiguration configuration) {
-        return new LRUBloomFilter<>(tag, configuration);
+    public static <R> LRUFilter<R> create(String tag, LRUFilterConfig configuration) {
+        return new LRUFilter<>(tag, configuration);
     }
 
-    public static <R> LRUBloomFilter<R> create(String tag, int sn, double sfpp, int maxSize) {
-        return new LRUBloomFilter<>(tag, LRUFilterConfiguration.config(sn, sfpp, maxSize));
+    public static <R> LRUFilter<R> create(String tag, int sn, double sfpp, int maxSize) {
+        return new LRUFilter<>(tag, LRUFilterConfig.config(sn, sfpp, maxSize));
     }
 
-    public static <R> LRUBloomFilter<R> create(String tag, int sn, double sfpp, int maxSize, Duration ttl) {
-        return new LRUBloomFilter<>(tag, LRUFilterConfiguration.config(sn, sfpp, maxSize, ttl));
+    public static <R> LRUFilter<R> create(String tag, int sn, double sfpp, int maxSize, Duration ttl) {
+        return new LRUFilter<>(tag, LRUFilterConfig.config(sn, sfpp, maxSize, ttl));
     }
 
 }
