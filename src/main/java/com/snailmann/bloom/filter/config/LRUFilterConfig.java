@@ -14,7 +14,7 @@ import static com.snailmann.bloom.utils.BloomUtils.*;
  * @author liwenjie
  */
 @Data
-public class LRUFilterConfiguration {
+public class LRUFilterConfig {
 
     public static final Duration NEVER_EXPIRED = Duration.ofMillis(Long.MAX_VALUE);
     private static final int FILTER_INITIAL_SIZE = 1;
@@ -46,27 +46,27 @@ public class LRUFilterConfiguration {
     private Duration ttl;
 
     /**
-     * Configuration template of filter
+     * Template Config of filter
      */
-    public FilterConfiguration templateConfiguration;
+    public FilterConfig templateConfig;
 
-    public static LRUFilterConfiguration defaultConfiguration() {
+    public static LRUFilterConfig defaultConfig() {
         return config(10000, 0.001d, 3);
     }
 
-    public static LRUFilterConfiguration config(int sn, double sfpp, int maxSize) {
+    public static LRUFilterConfig config(int sn, double sfpp, int maxSize) {
         return config(sn, sfpp, maxSize, NEVER_EXPIRED);
     }
 
-    public static LRUFilterConfiguration config(int sn, double sfpp, int maxSize, Duration ttl) {
-        LRUFilterConfiguration configuration = new LRUFilterConfiguration();
+    public static LRUFilterConfig config(int sn, double sfpp, int maxSize, Duration ttl) {
+        LRUFilterConfig configuration = new LRUFilterConfig();
         configuration.setSize(FILTER_INITIAL_SIZE);
         configuration.setMaxSize(maxSize);
         configuration.setSfpp(sfpp);
         configuration.setTtl(ttl);
 
-        FilterConfiguration template = optimalConfigOfFilter(sn, sfpp, maxSize);
-        configuration.setTemplateConfiguration(template);
+        FilterConfig template = optimalConfigOfFilter(sn, sfpp, maxSize);
+        configuration.setTemplateConfig(template);
         return configuration;
     }
 
@@ -83,14 +83,14 @@ public class LRUFilterConfiguration {
      * @param maxSize max number of filters
      * @return filter configuration
      */
-    public static FilterConfiguration optimalConfigOfFilter(int sn, double sfpp, int maxSize) {
+    public static FilterConfig optimalConfigOfFilter(int sn, double sfpp, int maxSize) {
         Assert.isTrue(maxSize >= FILTER_INITIAL_SIZE && maxSize <= FILTER_MAX_SIZE,
                 "maxSize needs to be in the range of FILTER_INITAL_SIZE to FILTER_MAX_SIZE");
         Assert.isTrue(sn > 0, "series n must be more than 0");
 
         double p = 1 - Math.pow(1 - sfpp, 1d / maxSize);
         int n = sn / maxSize;
-        return FilterConfiguration.config(n, p);
+        return FilterConfig.config(n, p);
     }
 
     /**

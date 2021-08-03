@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class Controller {
 
     @Autowired
-    BloomFilter<Long> boomFilter;
+    BloomFilter<Long> boomBloomFilter;
 
     @GetMapping
     public boolean contains(long id) {
-        return boomFilter.mightContains(id);
+        return boomBloomFilter.mightContains(id);
     }
 
     @GetMapping("/add")
     public void add(long id) {
-        boomFilter.put(id);
+        boomBloomFilter.put(id);
     }
 
 

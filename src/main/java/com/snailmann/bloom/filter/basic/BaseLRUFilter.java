@@ -3,27 +3,30 @@ package com.snailmann.bloom.filter.basic;
 import com.snailmann.bloom.filter.config.LRUFilterConfig;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author liwenjie
  */
-public abstract class BaseLRUBloomFilter<T> implements BloomFilter<T> {
+public abstract class BaseLRUFilter<T> implements Filter<T> {
 
     @Getter
     @Setter
-    private String name = "default";
+    private String name;
 
-    public LRUFilterConfig configuration;
+    public LRUFilterConfig config;
 
-    public BaseLRUBloomFilter() {
-        this(null, LRUFilterConfig.defaultConfiguration());
+    public BaseLRUFilter() {
+        this(null, LRUFilterConfig.defaultConfig());
     }
 
-    public BaseLRUBloomFilter(String name, LRUFilterConfig configuration) {
-        if (null != name) {
-            this.name = name;
-        }
-        this.configuration = configuration;
+    public BaseLRUFilter(String name, LRUFilterConfig config) {
+        this.name = StringUtils.isBlank(name) ? DEFAULT_NAME : name;
+        this.config = config;
+    }
+
+    public LRUFilterConfig config() {
+        return this.config;
     }
 
 }

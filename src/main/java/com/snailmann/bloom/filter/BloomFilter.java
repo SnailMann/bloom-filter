@@ -2,10 +2,10 @@ package com.snailmann.bloom.filter;
 
 import com.snailmann.bloom.filter.basic.BaseFilter;
 import com.snailmann.bloom.filter.config.FilterConfig;
+import com.snailmann.bloom.hash.Hash;
 import com.snailmann.bloom.hash.Murmur3Hash;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -15,7 +15,7 @@ import static com.snailmann.bloom.filter.config.FilterConfig.charset;
  * @author liwenjie
  */
 @Slf4j
-public final class Filter<E> extends BaseFilter<E> {
+public final class BloomFilter<E> extends BaseFilter<E> {
 
     /**
      * Data field of bloom filter
@@ -35,18 +35,18 @@ public final class Filter<E> extends BaseFilter<E> {
     /**
      * Murmur3 hash functions
      */
-    private final Murmur3Hash murmur3 = new Murmur3Hash();
+    private final Hash murmur3 = new Murmur3Hash();
 
-    private Filter() {
+    private BloomFilter() {
         this(null, FilterConfig.defaultConfig());
     }
 
-    private Filter(String tag, FilterConfig configuration) {
-        super(tag, configuration);
+    private BloomFilter(String name, FilterConfig configuration) {
+        super(name, configuration);
         bitCount = new LongAdder();
         currentSize = new LongAdder();
         // hashes
-        murmur3.hashes(configuration.getK());
+        murmur3.createHashes(configuration.getK());
         // fill bytes
         this.bytes = new byte[(int) Math.ceil((double) configuration.getM() / B)];
     }
@@ -68,10 +68,10 @@ public final class Filter<E> extends BaseFilter<E> {
      * @param bs bytes of element
      */
     @Override
-    public void put(byte[] bs) {
+    public synchronized void put(byte[] bs) {
         int m = config().getM();
-        for (var hash : murmur3.hashes) {
-            int index = murmur3.index(() -> hash.hash(hash.hashToLong(bs)), m);
+        int[] indexs = murmur3.hashes(bs, m);
+        for (int index : indexs) {
             byte bits = this.bytes[index / B];
             byte t = (byte) (1 << (B_MASK - (index % B)));
             this.bytes[index / B] = (byte) (bits | t);
@@ -82,7 +82,7 @@ public final class Filter<E> extends BaseFilter<E> {
         }
         // modify date
         this.currentSize.increment();
-        this.config().getMeta().setUpdateDate(new Date());
+        this.config().setCreateDate(System.currentTimeMillis());
     }
 
     /**
@@ -114,10 +114,10 @@ public final class Filter<E> extends BaseFilter<E> {
     }
 
     @Override
-    public boolean mightContains(byte[] bs) {
+    public synchronized boolean mightContains(byte[] bs) {
         int m = config().getM();
-        for (var hash : murmur3.hashes) {
-            int index = murmur3.index(() -> hash.hash(hash.hashToLong(bs)), m);
+        int[] indexs = murmur3.hashes(bs, m);
+        for (int index : indexs) {
             byte bits = bytes[index / B];
             byte t = (byte) (1 << (B_MASK - (index % B)));
             if ((bits & t) == 0) {
@@ -135,24 +135,19 @@ public final class Filter<E> extends BaseFilter<E> {
         return bitCount.longValue();
     }
 
-    public static <R> Filter<R> create() {
-        return new Filter<>();
+    public static <R> BloomFilter<R> create() {
+        return new BloomFilter<>();
     }
 
-    public static <R> Filter<R> create(String tag, FilterConfig configuration) {
-        return new Filter<>(tag, configuration);
+    public static <R> BloomFilter<R> create(String name, FilterConfig configuration) {
+        return new BloomFilter<>(name, configuration);
     }
 
-    public static <R> Filter<R> create(String tag, int n, double p) {
-        return new Filter<>(tag, FilterConfig.config(n, p));
+    public static <R> BloomFilter<R> create(String name, int n, double p) {
+        return new BloomFilter<>(name, FilterConfig.config(n, p));
     }
 
-    public static <R> Filter<R> create(String tag, int n, int k, double b) {
-        return new Filter<>(tag, FilterConfig.config(n, k, b));
-    }
-
-    public static void main(String[] args) {
-        Long v = 15L;
-        System.out.println(Long.bitCount(v));
+    public static <R> BloomFilter<R> create(String name, int n, int k, double b) {
+        return new BloomFilter<>(name, FilterConfig.config(n, k, b));
     }
 }

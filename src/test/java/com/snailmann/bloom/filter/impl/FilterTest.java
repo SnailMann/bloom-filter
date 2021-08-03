@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
  * @author liwenjie
  */
 @Slf4j
-public class BloomFilterTest {
+public class FilterTest {
 
     @Test
     public void fpp_n_p_test() {
         var n = 30000;
         var p = 0.001;
-        BloomFilter<Integer> filter = BloomFilter.create("test", n, p);
-        var fpp = test(filter, n);
+        BloomFilter<Integer> bloomFilter = BloomFilter.create("test", n, p);
+        var fpp = test(bloomFilter, n);
         Assert.isTrue(String.format("%.3f", p).equals(String.format("%.3f", fpp)), "fpp not match");
     }
 
@@ -32,20 +32,20 @@ public class BloomFilterTest {
         var k = 10;
         var b = 14.377333333333333;
         var p = 0.001;
-        BloomFilter<Integer> filter = BloomFilter.create("test", n, k, b);
-        var fpp = test(filter, n);
+        BloomFilter<Integer> bloomFilter = BloomFilter.create("test", n, k, b);
+        var fpp = test(bloomFilter, n);
         Assert.isTrue(String.format("%.3f", p).equals(String.format("%.3f", fpp)), "fpp not match");
     }
 
-    public double test(BloomFilter<Integer> filter, int n) {
+    public double test(BloomFilter<Integer> bloomFilter, int n) {
         Map<String, Boolean> map = new LinkedHashMap<>();
-        System.out.println(filter);
+        System.out.println(bloomFilter);
 
         for (int i = 0; i < n; i++) {
-            filter.put(i);
+            bloomFilter.put(i);
         }
         for (int i = n; i < n * 2; i++) {
-            boolean res = filter.mightContains(i);
+            boolean res = bloomFilter.mightContains(i);
             map.put(i + "", res);
         }
 

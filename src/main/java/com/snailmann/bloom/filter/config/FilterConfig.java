@@ -4,7 +4,6 @@ import lombok.Data;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 import static com.snailmann.bloom.utils.BloomUtils.*;
 
@@ -14,7 +13,7 @@ import static com.snailmann.bloom.utils.BloomUtils.*;
  * @author liwenjie
  */
 @Data
-public class FilterConfiguration {
+public class FilterConfig {
 
     /**
      * Encoding used for storing hash values as strings
@@ -38,78 +37,54 @@ public class FilterConfiguration {
     private int k;
 
     /**
-     * Space occupied by unit element (unit: bit)
+     * Bits occupied by each element (unit: bit)
      */
-    private double b;
+    private double c;
 
     /**
      * Fpp (false positive probability)
      */
     private double p;
 
-    /**
-     * Configuration meta
-     */
-    private Meta meta;
+    private Long createDate = System.currentTimeMillis();
+    private Long modifyDate = this.createDate;
 
-    public FilterConfiguration() {
-        this.meta = Meta.meta();
-    }
-
-    public static FilterConfiguration config(int n, int k, double b) {
-        FilterConfiguration configuration = new FilterConfiguration();
+    public static FilterConfig config(int n, int k, double c) {
+        FilterConfig configuration = new FilterConfig();
         configuration.setN(n);
         configuration.setK(k);
-        configuration.setB(b);
-        configuration.setM(resizeNumOfBits(n, b));
+        configuration.setC(c);
+        configuration.setM(resizeNumOfBits(n, c));
         configuration.setP(optimalFpp(n, configuration.getM(), k));
         return configuration;
     }
 
-    public static FilterConfiguration config(int n, double p) {
-        FilterConfiguration configuration = new FilterConfiguration();
+    public static FilterConfig config(int n, double p) {
+        FilterConfig configuration = new FilterConfig();
         configuration.setN(n);
         configuration.setP(p);
         int m = optimalNumOfBits(n, p);
         configuration.setM(m);
         configuration.setK(optimalNumOfHashFunctions(n, m));
-        configuration.setB(bitsOfElement(n, m));
+        configuration.setC(bitsOfElement(n, m));
         return configuration;
     }
 
-    public static FilterConfiguration defaultConfiguration() {
+    public static FilterConfig defaultConfig() {
         return config(10000, 0.00046);
     }
 
-    public static FilterConfiguration copyOf(FilterConfiguration src) {
-        FilterConfiguration target = new FilterConfiguration();
-        target.setN(src.getN());
-        target.setM(src.getM());
-        target.setP(src.getP());
-        target.setK(src.getK());
-        target.setB(src.getB());
+    public static FilterConfig copyOf(FilterConfig source) {
+        FilterConfig target = new FilterConfig();
+        target.setN(source.getN());
+        target.setM(source.getM());
+        target.setP(source.getP());
+        target.setK(source.getK());
+        target.setC(source.getC());
         return target;
     }
 
     public static Charset charset() {
         return CHARSET;
     }
-
-    public Meta getMeta() {
-        return meta;
-    }
-
-    @Data
-    public static class Meta {
-        Date createDate;
-        Date updateDate;
-
-        public static Meta meta() {
-            Meta meta = new Meta();
-            meta.setCreateDate(new Date());
-            meta.setUpdateDate(new Date());
-            return meta;
-        }
-    }
-
 }

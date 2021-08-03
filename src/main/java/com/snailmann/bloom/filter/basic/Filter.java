@@ -5,7 +5,9 @@ import java.util.List;
 /**
  * @author liwenjie
  */
-public interface BloomFilter<T> {
+public interface Filter<T> {
+
+    String DEFAULT_NAME = "default";
 
     /**
      * Put a element to the filter
@@ -29,7 +31,7 @@ public interface BloomFilter<T> {
     void putAll(List<T> elements);
 
     /**
-     * whether an element in present in the filter
+     * Whether an element in present in the filter
      *
      * @param element element want to know
      * @return {@code true} if the element present in the filter
@@ -37,11 +39,20 @@ public interface BloomFilter<T> {
     boolean mightContains(T element);
 
     /**
-     * whether an element in present in the filter
+     * Whether an element in present in the filter
      *
      * @param bytes raw bytes of element
      * @return {@code true} if the element present in the filterz
      */
     boolean mightContains(byte[] bytes);
+
+    /**
+     * Get name of filter
+     *
+     * @return name
+     */
+    default String name() {
+        return DEFAULT_NAME;
+    }
 
 }

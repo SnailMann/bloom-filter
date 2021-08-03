@@ -12,12 +12,19 @@ public abstract class Hash {
      *
      * @param k number of hash functions
      */
-    abstract void hashes(int k);
+    public abstract void createHashes(int k);
+
+    /**
+     * @param bytes bytes want to hash
+     * @param len   m
+     * @return indexs
+     */
+    public abstract int[] hashes(byte[] bytes, int len);
 
     /**
      * "long & Long.MAX_VALUE" to get a positive number
      */
-    public int index(Supplier<Long> hashSupplier, int len) {
+    int index(Supplier<Long> hashSupplier, int len) {
         return (int) ((hashSupplier.get() & Long.MAX_VALUE) % len);
     }
 }
